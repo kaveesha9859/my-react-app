@@ -1,33 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
-  const [todos, setTodos] = useState([])
-  const [inputValue, setInputValue] = useState("")
+  const [joke, setJoke] = useState("Loading...")
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    async function fetchJokes() {
+      try {
+        let response = await fetch("https://official-joke-api.appspot.com/random_joke")
+        let data = await response.json()
+        setJoke(`${data.setup} ... ${data.punchline}`)
+      } catch (error) {
+        setJoke("Something went wrong!")
+      }
+
+
+    }
+    fetchJokes()
+
+  }, [count])
 
   return (
     <div>
-      <h1>To-Do List</h1>
-      <input
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Add a task..."
-      />
-      <button onClick={() => {
-        if (inputValue === "") return
-
-        setTodos([...todos, inputValue])
-        setInputValue("")
-      }}>Add</button>
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>{todo}
-            <button onClick={() => {
-              setTodos(todos.filter((todo, i) => i !== index))
-            }}>X</button>
-          </li>
-        ))}
-      </ul>
-    </div >
+      <h1>Random Joke</h1>
+      <p>{joke}</p>
+      <button onClick={() => setCount(count + 1)}>Get New Joke</button>
+    </div>
   )
 }
 
